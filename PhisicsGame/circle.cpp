@@ -23,6 +23,6 @@ void Circle::update(float deltaTime) {
 	);
 }
 
-void Circle::draw() {
+void Circle::draw(Shader& shader) {
 	
 }

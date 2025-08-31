@@ -32,7 +32,7 @@ void Triangle::update(float deltaTime) {
 	);
 }
 
-void Triangle::draw() {
+void Triangle::draw(Shader& shader) {
 
 }
 

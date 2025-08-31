@@ -30,6 +30,6 @@ void Object::processInput(const InputState& state) {
 
 }
 
-void Object::draw() {
+void Object::draw(Shader& shader) {
 
 }

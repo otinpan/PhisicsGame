@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
-#include <glm/glm.hpp>
 #include "input.h"
+#include "shader.h"
 
 enum ShapeType {
 	SHAPE_CIRCLE,
@@ -27,7 +27,7 @@ public:
 	virtual void initialize();
 	virtual void update(float deltaTime);
 	virtual void processInput(const InputState& state);
-	virtual void draw();
+	virtual void draw(Shader& shader);
 
 	// getter
 	const glm::vec2& getCenter() { return mCenter; }

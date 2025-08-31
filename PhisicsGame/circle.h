@@ -8,7 +8,7 @@ public:
 
 	void initialize() override;
 	void update(float deltaTime) override;
-	void draw() override;
+	void draw(Shader& shader) override;
 
 private:
 	float mRadius;

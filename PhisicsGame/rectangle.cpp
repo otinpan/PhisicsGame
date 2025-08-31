@@ -32,7 +32,7 @@ void Rectangle::update(float deltaTime) {
 	);
 }
 
-void Rectangle::draw() {
+void Rectangle::draw(Shader& shader) {
 
 }
 

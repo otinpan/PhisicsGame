@@ -2,6 +2,7 @@
 #define INCLUDE_SEQUENCE_PARENT_H
 
 #include <array> 
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include "input.h"
 

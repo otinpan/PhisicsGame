@@ -3,6 +3,7 @@
 #include "cup.h"
 #include <algorithm>
 
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
@@ -104,7 +105,7 @@ void Play::updatePlay(float deltaTime) {
 
 void Play::draw() {
 	for (auto& obj : mObjects) {
-		obj->draw();
+		//obj->draw(shader);
 	}
 	mCup->draw();
 }
