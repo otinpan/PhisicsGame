@@ -1,9 +1,9 @@
+#include <glad/glad.h>
 #include "triangle.h"
+#include "GLMesh.h"
 
-Triangle::Triangle(glm::vec2 center, float width, float height, glm::vec3 rgb)
-	:Object(center, rgb)
-	, mWidth(width)
-	, mHeight(height)
+Triangle::Triangle(glm::vec3 center, glm::vec3 rgb,GLMesh& mesh, glm::vec3 scale, float angle)
+	:Object(center, rgb,mesh,scale,angle)
 {
 	setShapeType(SHAPE_TRIANGLE);
 }
@@ -12,27 +12,22 @@ Triangle::~Triangle() {
 
 }
 
-void Triangle::initialize() {
-	Object::initialize();
+void Triangle::initialize(class Play* play) {
+	Object::initialize(play);
 
-	sVertices.resize(3);
-	sVertices[0] = glm::vec3(getCenter().x + mWidth / 2.0f, getCenter().y - mHeight / 3.0f, 0.0f);
-	sVertices[1] = glm::vec3(getCenter().x - mWidth / 2.0f, getCenter().y - mHeight / 3.0f, 0.0f);
-	sVertices[2] = glm::vec3(getCenter().x, getCenter().y + (2.0f * mHeight) / 3.0f, 0.0f);
-
-	setVertices(sVertices);
 }
 
 void Triangle::update(float deltaTime) {
-	setCenter(
-		glm::vec2(
-		getCenter().x + getVelocity().x * deltaTime,
-		getCenter().y + getVelocity().y * deltaTime
-		)
-	);
+
 }
 
 void Triangle::draw(Shader& shader) {
+	shader.use();
+	shader.setMatrix4("model", getModel());
+	shader.setVec3("objectColor", getColor());
+
+	glBindVertexArray(getMesh().VAO);
+	glDrawArrays(GL_TRIANGLES, 0, getMesh().vertexCount);
 
 }
 

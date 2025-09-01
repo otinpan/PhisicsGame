@@ -1,7 +1,10 @@
 #pragma once
+#include "shader.h"
+#include "GLMesh.h"
 #include "parent.h"
 #include <vector>
 #include <chrono>
+
 
 class Play {
 public:
@@ -54,5 +57,13 @@ private:
 	static constexpr float deltaTime = 1.0f / 60.0f;
 	std::chrono::steady_clock::time_point mLastTime{};
 	float mAccumulator = 0.0f;
+
+	// •`‰æMesh‚Ì‰Šú‰»
+	GLMesh sTriangleMesh;
+	GLMesh sRectangleMesh;
+	GLMesh sCircleMesh;
+
+	// Shader
+	class Shader* mShader;
 
 };

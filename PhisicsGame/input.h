@@ -1,6 +1,5 @@
 #pragma once
 #include <array> 
-#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 struct InputState {

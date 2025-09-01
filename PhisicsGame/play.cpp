@@ -1,10 +1,10 @@
 #include "play.h"
 #include "object.h"
 #include "cup.h"
+#include "triangle.h"
+#include "rectangle.h"
+#include "circle.h"
 #include <algorithm>
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -19,6 +19,8 @@ Play::Play()
 	, hitstopTime(0.0f)
 	, mHitstopTime(0.0f)
 	, mSeqID(Parent::SEQ_NONE)
+	, mShader(nullptr)
+
 {
 	initialize();
 }
@@ -78,7 +80,7 @@ void Play::updatePlay(float deltaTime) {
 	}
 
 	mUpdatingObjects = true;
-	for (auto obj : mObjects) {
+	for (auto &obj : mObjects) {
 		obj->update(deltaTime);
 	}
 	mUpdatingObjects = false;
@@ -105,7 +107,7 @@ void Play::updatePlay(float deltaTime) {
 
 void Play::draw() {
 	for (auto& obj : mObjects) {
-		//obj->draw(shader);
+		obj->draw(*mShader);
 	}
 	mCup->draw();
 }
@@ -130,14 +132,38 @@ void Play::updateHitstop(float deltaTime) {
 
 
 void Play::loadData() {
+
+	// Shader
+	mShader = new Shader("vertex_normal.glsl", "fragment_normal.glsl");
+
 	mCup = new Cup(glm::vec2(0.0f, -0.5f), 1.0f, 0.5f, glm::vec3(0.5f, 0.35f, 0.05f));
 	mCup->initialize();
+
+	sTriangleMesh = createInitTriangle();
+	sRectangleMesh = createInitRectangle();
+
+	Triangle* tri = new Triangle(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(1.0f, 0.0f, 0.0f), sTriangleMesh);
+	tri->initialize(this);
+
+	Rectangle* rect = new Rectangle(
+		glm::vec3(0.0f, 0.5f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		sRectangleMesh,
+		glm::vec3(0.5f, 0.5f, 0.5f),
+		glm::radians(45.0f)
+	);
+	rect->initialize(this);
+	rect->setVelocity(glm::vec2(1.0f, 0.0f));
+
+
+	printf("%d", mObjects.size());
 }
 
 void Play::unloadData() {
 	while (!mObjects.empty()) {
 		delete mObjects.back();
 	}
+	mCup = nullptr;
 }
 
 void Play::shutdown() {

@@ -1,3 +1,4 @@
+#include <glad/glad.h>
 #include"Shader.h"
 #include<fstream>
 #include<sstream>
@@ -41,6 +42,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 
 	int success;
 	char infoLog[512];
+
 
 	// Vertex shader
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);

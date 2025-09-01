@@ -3,10 +3,10 @@
 
 class Circle :public Object {
 public:
-	Circle(glm::vec2 center, float radius, glm::vec3 rgb);
+	Circle(glm::vec3 center, float radius, glm::vec3 rgb,GLMesh& mesh);
 	~Circle();
 
-	void initialize() override;
+	void initialize(class Play* play) override;
 	void update(float deltaTime) override;
 	void draw(Shader& shader) override;
 
