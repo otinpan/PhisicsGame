@@ -21,14 +21,21 @@ public:
 	
 	void moveTo(SeqID next, SeqID pre);
 	
+	//getter
 	class Play*& GetPlay() { return mPlay; }
 	
 	SeqID GetNextSeq() { return mNext; }
 	SeqID GetPreSeq() { return mPre; }
+
+	// setter
+
+
 	
 	
 private:
 	class Play* mPlay;
+
+
 	
 	SeqID mNext;
 	SeqID mPre;

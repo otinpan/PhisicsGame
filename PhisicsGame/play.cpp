@@ -106,11 +106,35 @@ void Play::updatePlay(float deltaTime) {
 }
 
 void Play::draw() {
+	if (!mShader) {
+		std::cerr << "Shader not initialized!" << std::endl;
+		return;
+	}
+	if (!mCup) {
+		std::cerr << "Cup not initialized!" << std::endl;
+		return;
+	}
+	unsigned int mScreenWidth, mScreenHeight;
+	glfwGetFramebufferSize(glfwGetCurrentContext(), (int*)&mScreenWidth, (int*)&mScreenHeight);
+	if (mScreenWidth == 0 || mScreenHeight == 0) {
+		mScreenWidth = 800;
+		mScreenHeight = 600;
+		std::cerr << "Screen size is zero!" << std::endl;
+		printf("%d %d\n", mScreenWidth, mScreenHeight);
+	}
+
+	mShader->use();
+	float aspect = (float)mScreenWidth / (float)mScreenHeight;
+	glm::mat4 projection = glm::ortho(-aspect, aspect, -1.0f, 1.0f, -1.0f, 1.0f);
+	mShader->setMatrix4("projection", projection);
+
+
 	for (auto& obj : mObjects) {
-		obj->draw(*mShader);
+		if (obj) obj->draw(*mShader);
 	}
 	mCup->draw();
 }
+
 
 void Play::setHitstopTime(float time) {
 	mHitstopTime = 0.0f;
@@ -142,8 +166,6 @@ void Play::loadData() {
 	sTriangleMesh = createInitTriangle();
 	sRectangleMesh = createInitRectangle();
 
-	Triangle* tri = new Triangle(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(1.0f, 0.0f, 0.0f), sTriangleMesh);
-	tri->initialize(this);
 
 	Rectangle* rect = new Rectangle(
 		glm::vec3(0.0f, 0.5f, 0.0f),
@@ -154,6 +176,9 @@ void Play::loadData() {
 	);
 	rect->initialize(this);
 	rect->setVelocity(glm::vec2(1.0f, 0.0f));
+
+	Triangle* tri = new Triangle(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), sTriangleMesh);
+	tri->initialize(this);
 
 
 	printf("%d", mObjects.size());

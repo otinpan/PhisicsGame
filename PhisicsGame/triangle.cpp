@@ -18,7 +18,7 @@ void Triangle::initialize(class Play* play) {
 }
 
 void Triangle::update(float deltaTime) {
-
+	Object::update(deltaTime);
 }
 
 void Triangle::draw(Shader& shader) {

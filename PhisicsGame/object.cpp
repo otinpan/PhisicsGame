@@ -1,3 +1,4 @@
+
 #include "object.h"
 #include "play.h"
 
@@ -69,5 +70,4 @@ void Object::processInput(const InputState& state) {
 }
 
 void Object::draw(Shader& shader) {
-
 }

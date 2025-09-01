@@ -17,7 +17,7 @@ void Rectangle::initialize(class Play* play) {
 }
 
 void Rectangle::update(float deltaTime) {
-
+	Object::update(deltaTime);
 }
 
 void Rectangle::draw(Shader& shader) {

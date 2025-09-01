@@ -16,6 +16,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+unsigned int mScreenWidth = SCR_WIDTH;
+unsigned int mScreenHeight = SCR_HEIGHT;
+
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
@@ -78,4 +81,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	// make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
+	mScreenHeight = height;
+	mScreenWidth = width;
 }
