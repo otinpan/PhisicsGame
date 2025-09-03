@@ -1,5 +1,7 @@
 #include <glad/glad.h>
 #include "GLMesh.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 
 GLMesh createInitTriangle() {
@@ -83,6 +85,62 @@ GLMesh createInitRectangle() {
 	glBindVertexArray(0);
 
 	return m;
+}
+
+GLMesh createInitCircle(unsigned int segments,float radius) {
+	GLMesh m;
+	m.radius = radius;
+	std::vector<float> vertices;
+	std::vector<unsigned int> indices;
+
+	// å¥ì_
+	vertices.emplace_back(0.0f);
+	vertices.emplace_back(0.0f);
+	vertices.emplace_back(0.0f);
+
+	m.vertices.emplace_back(glm::vec3(0.0f, 0.0f, 0.0f));
+
+	for (unsigned int i = 0; i <= segments; i++) {
+		float theta = 2.0f * M_PI / (float)segments * (float)i;
+		float x = radius * cos(theta);
+		float y = radius * sin(theta);
+		vertices.emplace_back(x);
+		vertices.emplace_back(y);
+		vertices.emplace_back(0.0f);
+		m.vertices.emplace_back(glm::vec3(x, y, 0.0f));
+	}
+
+	for (int i = 1; i <= segments; i++) {
+		indices.emplace_back(0);
+		indices.emplace_back(i);
+		indices.emplace_back(i + 1);
+	}
+
+	m.vertexCount = static_cast<unsigned int>(vertices.size()/3);
+	m.indexCount = indices.size();
+
+	glGenVertexArrays(1, &m.VAO);
+	glGenBuffers(1, &m.VBO);
+	glGenBuffers(1, &m.EBO);
+
+	glBindVertexArray(m.VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m.VBO);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m.EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+
+	// âèú
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	return m;
+	
 }
 
 void destroyMesh(GLMesh& m) {

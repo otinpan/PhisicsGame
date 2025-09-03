@@ -4,7 +4,7 @@
 #include "parent.h"
 #include <vector>
 #include <chrono>
-
+#include <random>
 
 class Play {
 public:
@@ -35,7 +35,7 @@ public:
 	void setSeqID(Parent::SeqID id) { mSeqID = id; }
 
 private:
-	void processInput(Parent* parent);
+	void processInput(Parent* parent,float deltaTime);
 	void updatePlay(float deltaTime);
 	void loadData();
 	void unloadData();
@@ -53,6 +53,8 @@ private:
 
 	Parent::SeqID mSeqID;
 
+	InputState mInputState;
+
 	// çXêV
 	static constexpr float deltaTime = 1.0f / 60.0f;
 	std::chrono::steady_clock::time_point mLastTime{};
@@ -63,10 +65,24 @@ private:
 	GLMesh sRectangleMesh;
 	GLMesh sCircleMesh;
 
+	// Objectí«â¡
+	void addTriangle(glm::vec3 center, glm::vec3 color, glm::vec3 scale = { 1.0f,1.0f,1.0f }, float angle=0.0f);
+	void addRectangle(glm::vec3 center, glm::vec3 color, glm::vec3 scale = { 1.0f,1.0f,1.0f }, float angle=0.0f);
+	void addCircle(glm::vec3 center, glm::vec3 color, glm::vec3 scale = { 1.0f,1.0f,1.0f }, float angle=0.0f);
+	bool mIsTriangleCooldown;
+	bool mIsRectangleCooldown;
+	bool mIsCircleCooldown;
+	float mTriangleAccumulator;
+	float mRectangleAccumulator;
+	float mCircleAccumulator;
+
 	// Shader
 	class Shader* mShader;
 
-	
-
+	// random
+	// Play.h
+	std::mt19937 rng{ std::random_device{}() };
+	std::uniform_real_distribution<float> distScale{ 0.1f, 0.7f };
+	std::uniform_real_distribution<float> distAngleDeg{ 0.0f, 360.0f };
 
 };

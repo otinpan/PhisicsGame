@@ -27,11 +27,27 @@ void Parent::gatherInput(InputState& state) {
 	state.key[GLFW_KEY_A] = glfwGetKey(mWindow, GLFW_KEY_A) == GLFW_PRESS;
 	state.key[GLFW_KEY_S] = glfwGetKey(mWindow, GLFW_KEY_S) == GLFW_PRESS;
 	state.key[GLFW_KEY_D] = glfwGetKey(mWindow, GLFW_KEY_D) == GLFW_PRESS;
+	state.key[GLFW_KEY_1] = glfwGetKey(mWindow, GLFW_KEY_1) == GLFW_PRESS;
+	state.key[GLFW_KEY_2] = glfwGetKey(mWindow, GLFW_KEY_2) == GLFW_PRESS;
+	state.key[GLFW_KEY_3] = glfwGetKey(mWindow, GLFW_KEY_3) == GLFW_PRESS;
 	
 	double x, y;
 	glfwGetCursorPos(mWindow, &x, &y);
 	state.dx = static_cast<float>(x - state.mouseX);
 	state.dy = static_cast<float>(y - state.mouseY);
+	unsigned int mScreenWidth, mScreenHeight;
+	glfwGetFramebufferSize(mWindow, (int*)&mScreenWidth, (int*)&mScreenHeight);
+	x = std::max((double) 0, (double)x);
+	y = std::max((double)0, (double)y);
+	x = std::min((double)mScreenWidth, (double)x);
+	y = std::min((double)mScreenHeight, (double)y);
+
+	// worldç¿ïWÇ…ïœä∑
+	x *= (float)2.0f / (float)mScreenWidth;
+	x -= 1.0f;
+	y *= -(float)2.0f / (float)mScreenHeight;
+	y += 1.0f;
+
 	state.mouseX = static_cast<float>(x);
 	state.mouseY = static_cast<float>(y);
 }

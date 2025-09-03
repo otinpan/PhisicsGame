@@ -3,7 +3,7 @@
 
 class Circle :public Object {
 public:
-	Circle(glm::vec3 center, float radius, glm::vec3 rgb,GLMesh& mesh);
+	Circle(glm::vec3 center, glm::vec3 rgb, GLMesh& mesh, glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f), float angle = 0.0f);
 	~Circle();
 
 	void initialize(class Play* play) override;

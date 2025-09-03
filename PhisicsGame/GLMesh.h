@@ -9,9 +9,11 @@ struct GLMesh {
 	unsigned int EBO=0;
 	size_t vertexCount=0; // ’¸“_‚Ì”
 	size_t indexCount=0; // index‚Ì”
+	float radius = 0.0f; // ‰~‚Ìê‡
 };
 
 GLMesh createInitTriangle();
 GLMesh createInitRectangle();
+GLMesh createInitCircle(unsigned int segments = 32, float radius = 0.5f);
 void destroyMesh(GLMesh& m);
 

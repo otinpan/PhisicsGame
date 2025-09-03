@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <random>
 
 
 Play::Play()
@@ -20,7 +21,13 @@ Play::Play()
 	, mHitstopTime(0.0f)
 	, mSeqID(Parent::SEQ_NONE)
 	, mShader(nullptr)
-
+	, mCup(nullptr)
+	, mIsTriangleCooldown(false)
+	, mIsRectangleCooldown(false)
+	, mIsCircleCooldown(false)
+	, mTriangleAccumulator(0.0f)
+	, mRectangleAccumulator(0.0f)
+	, mCircleAccumulator(0.0f)
 {
 	initialize();
 }
@@ -50,11 +57,11 @@ void Play::update(Parent* parent) {
 		frameTime = std::min(frameTime, 0.25f);
 		mAccumulator += frameTime;
 
-		processInput(parent);
 
 		int steps = 0;
 		const int kMaxSteps = 5;
 		while (mAccumulator >= deltaTime && steps < kMaxSteps) {
+			processInput(parent,deltaTime);
 			updatePlay(deltaTime);
 			mAccumulator -= deltaTime;
 			++steps;
@@ -64,13 +71,75 @@ void Play::update(Parent* parent) {
 	}
 }
 
-void Play::processInput(Parent* parent) {
+void Play::processInput(Parent* parent,float deltaTime) {
 	if (!parent) {
 		printf("No parent\n");
 		throw;
 	}
-	InputState state;
-	parent->gatherInput(state);
+	
+	parent->gatherInput(mInputState);
+
+
+
+	// Object‚Ì’Ç‰Á
+	// Triangle
+	if (mIsTriangleCooldown) {
+		mTriangleAccumulator += deltaTime;
+		if (mTriangleAccumulator >= 1.0f) {
+			mTriangleAccumulator = 0.0f;
+			mIsTriangleCooldown = false;
+		}
+	}
+	if (mInputState.key[GLFW_KEY_1]&&!mIsTriangleCooldown) {
+		float s = distScale(rng);
+		float a = glm::radians(distAngleDeg(rng));
+		addTriangle(
+			glm::vec3(mInputState.mouseX, mInputState.mouseY, 0.0f),
+			glm::vec3(1.0f, 0.0f, 0.0f),
+			glm::vec3(s, s, 1.0f),
+			a
+		);
+		mIsTriangleCooldown = true;
+		
+	}
+	// Rectangle
+	if (mIsRectangleCooldown) {
+		mRectangleAccumulator += deltaTime;
+		if (mRectangleAccumulator >= 1.0f) {
+			mIsRectangleCooldown = false;
+			mRectangleAccumulator = 0.0f;
+		}
+	}
+	if (mInputState.key[GLFW_KEY_2]&&!mIsRectangleCooldown) {
+		float s = distScale(rng);
+		float a = glm::radians(distAngleDeg(rng));
+		addRectangle(
+			glm::vec3(mInputState.mouseX, mInputState.mouseY, 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f),
+			glm::vec3(s, s, 1.0f),
+			a
+		);
+		mIsRectangleCooldown = true;
+	}
+	// Circle
+	if (mIsCircleCooldown) {
+		mCircleAccumulator += deltaTime;
+		if (mCircleAccumulator >= 1.0f) {
+			mIsCircleCooldown = false;
+			mCircleAccumulator = 0.0f;
+		}
+	}
+	if (mInputState.key[GLFW_KEY_3]&&!mIsCircleCooldown) {
+		float s = distScale(rng);
+		float a = glm::radians(distAngleDeg(rng));
+		addCircle(
+			glm::vec3(mInputState.mouseX, mInputState.mouseY, 0.0f),
+			glm::vec3(0.0f, 0.0f, 1.0f),
+			glm::vec3(s, s, 1.0f)
+		);
+		mIsCircleCooldown = true;
+		
+	}
 }
 
 void Play::updatePlay(float deltaTime) {
@@ -132,7 +201,7 @@ void Play::draw() {
 	for (auto& obj : mObjects) {
 		if (obj) obj->draw(*mShader);
 	}
-	mCup->draw();
+	mCup->draw(*mShader);
 }
 
 
@@ -160,26 +229,35 @@ void Play::loadData() {
 	// Shader
 	mShader = new Shader("vertex_normal.glsl", "fragment_normal.glsl");
 
-	mCup = new Cup(glm::vec2(0.0f, -0.5f), 1.0f, 0.5f, glm::vec3(0.5f, 0.35f, 0.05f));
-	mCup->initialize();
+	// Cup
+	mCup = new Cup();
+	mCup->initialize(this);
 
+
+	//Object
 	sTriangleMesh = createInitTriangle();
 	sRectangleMesh = createInitRectangle();
+	sCircleMesh = createInitCircle(64, 0.5f);
 
+	/*addTriangle(
+		glm::vec3(-0.5f, 0.5f, 0.0f),
+		glm::vec3(1.0f,0.0f,0.0f),
+		glm::vec3(0.5f,0.5f,1.0f),
+		glm::radians(30.0f)
+	);
 
-	Rectangle* rect = new Rectangle(
-		glm::vec3(0.0f, 0.5f, 0.0f),
+	addRectangle(
+		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f),
-		sRectangleMesh,
-		glm::vec3(0.5f, 0.5f, 0.5f),
+		glm::vec3(0.5f, 0.3f, 1.0f),
 		glm::radians(45.0f)
 	);
-	rect->initialize(this);
-	rect->setVelocity(glm::vec2(1.0f, 0.0f));
 
-	Triangle* tri = new Triangle(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), sTriangleMesh);
-	tri->initialize(this);
-
+	addCircle(
+		glm::vec3(0.3f, -0.5f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f),
+		glm::vec3(0.3f, 0.3f, 1.0f)
+	);*/
 
 	printf("%d", mObjects.size());
 }
@@ -218,6 +296,21 @@ void Play::removeObject(Object* obj) {
 	}
 }
 
+
+void Play::addTriangle(glm::vec3 center, glm::vec3 color, glm::vec3 scale, float angle) {
+	Triangle* tri = new Triangle(center, color, sTriangleMesh, scale, angle);
+	tri->initialize(this);
+}
+
+void Play::addRectangle(glm::vec3 center, glm::vec3 color, glm::vec3 scale, float angle) {
+	Rectangle* rect = new Rectangle(center, color, sRectangleMesh, scale, angle);
+	rect->initialize(this);
+}
+
+void Play::addCircle(glm::vec3 center, glm::vec3 color, glm::vec3 scale, float angle) {
+	Circle* cir = new Circle(center, color, sCircleMesh, scale, angle);
+	cir->initialize(this);
+}
 
 void Play::moveTo(Parent* parent, Parent::SeqID id) {
 	

@@ -29,7 +29,7 @@ void Object::initialize(class Play* play) {
 
 	sVertices = getMesh().vertices;
 
-	setVertices(sVertices);
+	setSVertices(sVertices);
 
 
 	glm::mat4 model(1.0f);

@@ -18,6 +18,7 @@ void Rectangle::initialize(class Play* play) {
 
 void Rectangle::update(float deltaTime) {
 	Object::update(deltaTime);
+	setAngle(getAngle() + glm::radians(30.0f) * deltaTime);
 }
 
 void Rectangle::draw(Shader& shader) {
