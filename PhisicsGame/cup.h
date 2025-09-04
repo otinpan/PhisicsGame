@@ -24,6 +24,7 @@ public:
 	const float getRight() { return mRight; }
 	const float getTop() { return mTop; }
 	const float getBottom() { return mBottom; }
+	const float getRestitution() { return mRestitution; }
 
 	// setter
 	void setCenter(const glm::vec3& center) { mCenter = center; }
@@ -42,6 +43,9 @@ private:
 	float mHeight;
 	glm::vec3 mColor;
 	float mLineWidth;
+
+	// ”½”­ŒW”
+	float mRestitution;
 
 	// ’[‚Á‚±‚ÌÀ•W
 	float mLeft;

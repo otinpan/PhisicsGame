@@ -3,7 +3,8 @@
 
 class Rectangle :public Object {
 public:
-	Rectangle(glm::vec3 center, glm::vec3 rgb,GLMesh& mesh, glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f), float angle = 0.0f);
+	Rectangle(glm::vec3 center, glm::vec3 rgb,GLMesh& mesh, float mass,float restitution,
+		glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f), float angle = 0.0f);
 	~Rectangle();
 
 	void initialize(class Play* play) override;

@@ -66,9 +66,9 @@ private:
 	GLMesh sCircleMesh;
 
 	// Object’Ç‰Á
-	void addTriangle(glm::vec3 center, glm::vec3 color, glm::vec3 scale = { 1.0f,1.0f,1.0f }, float angle=0.0f);
-	void addRectangle(glm::vec3 center, glm::vec3 color, glm::vec3 scale = { 1.0f,1.0f,1.0f }, float angle=0.0f);
-	void addCircle(glm::vec3 center, glm::vec3 color, glm::vec3 scale = { 1.0f,1.0f,1.0f }, float angle=0.0f);
+	void addTriangle(glm::vec3 center, glm::vec3 color, float mass=30,float restitution=0.2f, glm::vec3 scale = { 1.0f,1.0f,1.0f }, float angle=0.0f);
+	void addRectangle(glm::vec3 center, glm::vec3 color, float mass = 30, float restitution = 0.2f, glm::vec3 scale = { 1.0f,1.0f,1.0f }, float angle=0.0f);
+	void addCircle(glm::vec3 center, glm::vec3 color, float mass = 30, float restitution = 0.2f, glm::vec3 scale = { 1.0f,1.0f,1.0f }, float angle=0.0f);
 	bool mIsTriangleCooldown;
 	bool mIsRectangleCooldown;
 	bool mIsCircleCooldown;
@@ -82,7 +82,7 @@ private:
 	// random
 	// Play.h
 	std::mt19937 rng{ std::random_device{}() };
-	std::uniform_real_distribution<float> distScale{ 0.1f, 0.7f };
+	std::uniform_real_distribution<float> distScale{ 0.1f, 0.3f };
 	std::uniform_real_distribution<float> distAngleDeg{ 0.0f, 360.0f };
 
 };

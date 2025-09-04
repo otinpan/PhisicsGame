@@ -3,7 +3,8 @@
 
 class Triangle :public Object {
 public:
-	Triangle(glm::vec3 center,glm::vec3 rgb,GLMesh& mesh, glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f), float angle = 0.0f);
+	Triangle(glm::vec3 center,glm::vec3 rgb,GLMesh& mesh, float mass,float restitution,
+		glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f), float angle = 0.0f);
 	~Triangle();
 
 	void initialize(class Play* play) override;

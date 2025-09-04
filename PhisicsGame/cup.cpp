@@ -4,12 +4,13 @@
 
 
 Cup::Cup()
-	: mLeft(-0.5f)
-	, mRight(0.5f)
+	: mLeft(-0.6f)
+	, mRight(0.6f)
 	, mTop(0.3f)
 	, mBottom(-0.9f)
-	, mColor(glm::vec3(1.0f, 1.0f, 0.3f))
+	, mColor(glm::vec3(0.0f, 0.0f, 0.0f))
 	, mLineWidth(5.0f)
+	, mRestitution(0.05f)
 {
 	mCenter = glm::vec3((mLeft + mRight) / 2.0f, (mTop + mBottom) / 2.0f, 0.0f);
 	mWidth = mRight - mLeft;

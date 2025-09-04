@@ -96,6 +96,8 @@ void Play::processInput(Parent* parent,float deltaTime) {
 		addTriangle(
 			glm::vec3(mInputState.mouseX, mInputState.mouseY, 0.0f),
 			glm::vec3(1.0f, 0.0f, 0.0f),
+			30.0f,
+			0.3f,
 			glm::vec3(s, s, 1.0f),
 			a
 		);
@@ -116,6 +118,8 @@ void Play::processInput(Parent* parent,float deltaTime) {
 		addRectangle(
 			glm::vec3(mInputState.mouseX, mInputState.mouseY, 0.0f),
 			glm::vec3(0.0f, 1.0f, 0.0f),
+			30.0f,
+			0.3f,
 			glm::vec3(s, s, 1.0f),
 			a
 		);
@@ -135,6 +139,8 @@ void Play::processInput(Parent* parent,float deltaTime) {
 		addCircle(
 			glm::vec3(mInputState.mouseX, mInputState.mouseY, 0.0f),
 			glm::vec3(0.0f, 0.0f, 1.0f),
+			30.0f,
+			0.3f,
 			glm::vec3(s, s, 1.0f)
 		);
 		mIsCircleCooldown = true;
@@ -156,6 +162,13 @@ void Play::updatePlay(float deltaTime) {
 
 	for (auto pending : mPendingObjects) {
 		mObjects.emplace_back(pending);
+	}
+	for (int k = 0; k < 5; k++) {
+		for (int i = 0; i < mObjects.size(); i++) {
+			for (int j = i + 1; j < mObjects.size(); j++) {
+				isIntersects(mObjects[i], mObjects[j]);
+			}
+		}
 	}
 	mPendingObjects.clear();
 
@@ -263,8 +276,8 @@ void Play::loadData() {
 }
 
 void Play::unloadData() {
-	while (!mObjects.empty()) {
-		delete mObjects.back();
+	for (auto& obj : mObjects) {
+		obj->setState(Object::DEAD);
 	}
 	mCup = nullptr;
 }
@@ -297,18 +310,18 @@ void Play::removeObject(Object* obj) {
 }
 
 
-void Play::addTriangle(glm::vec3 center, glm::vec3 color, glm::vec3 scale, float angle) {
-	Triangle* tri = new Triangle(center, color, sTriangleMesh, scale, angle);
+void Play::addTriangle(glm::vec3 center, glm::vec3 color,float mass,float restitution, glm::vec3 scale, float angle) {
+	Triangle* tri = new Triangle(center, color, sTriangleMesh, mass,restitution, scale, angle);
 	tri->initialize(this);
 }
 
-void Play::addRectangle(glm::vec3 center, glm::vec3 color, glm::vec3 scale, float angle) {
-	Rectangle* rect = new Rectangle(center, color, sRectangleMesh, scale, angle);
+void Play::addRectangle(glm::vec3 center, glm::vec3 color, float mass, float restitution, glm::vec3 scale, float angle) {
+	Rectangle* rect = new Rectangle(center, color, sRectangleMesh, mass,restitution,scale, angle);
 	rect->initialize(this);
 }
 
-void Play::addCircle(glm::vec3 center, glm::vec3 color, glm::vec3 scale, float angle) {
-	Circle* cir = new Circle(center, color, sCircleMesh, scale, angle);
+void Play::addCircle(glm::vec3 center, glm::vec3 color, float mass, float restitution, glm::vec3 scale, float angle) {
+	Circle* cir = new Circle(center, color, sCircleMesh, mass,restitution,scale, angle);
 	cir->initialize(this);
 }
 

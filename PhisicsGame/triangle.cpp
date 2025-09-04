@@ -2,8 +2,8 @@
 #include "triangle.h"
 #include "GLMesh.h"
 
-Triangle::Triangle(glm::vec3 center, glm::vec3 rgb,GLMesh& mesh, glm::vec3 scale, float angle)
-	:Object(center, rgb,mesh,scale,angle)
+Triangle::Triangle(glm::vec3 center, glm::vec3 rgb,GLMesh& mesh, float mass,float restitution,glm::vec3 scale, float angle)
+	:Object(center, rgb,mesh,mass,restitution,scale,angle)
 {
 	setShapeType(SHAPE_TRIANGLE);
 }
