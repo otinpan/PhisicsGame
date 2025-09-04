@@ -4,6 +4,7 @@
 #include "triangle.h"
 #include "rectangle.h"
 #include "circle.h"
+#include "intersect.h"
 #include <algorithm>
 
 #include <glm/glm.hpp>
