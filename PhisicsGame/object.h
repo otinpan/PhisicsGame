@@ -37,6 +37,9 @@ public:
 	const float getRadius() { return mRadius; }
 	const float getMass() { return mMass; }
 	const float getRestitution() { return mRestitution; }
+	const float getInertia() { return mInertia; }
+	const float getAngularSpeed() { return mAngularSpeed; }
+	const float getAngularAcceleration() { return mAngularAcceleration; }
 	const glm::vec3& getColor() { return mColor; }
 	const float getAngle() { return mAngle; }
 	const glm::vec3& getScale() { return mScale; }
@@ -45,12 +48,18 @@ public:
 	const GLMesh& getMesh() { return mMesh; }
 	ShapeType getShapeType() { return mShapeType; }
 	State getState() const { return mState; }
+	const float getHitRadius() { return mHitRadius; }
 
 	// setter
 	void setCenter(const glm::vec3& center) { mCenter = center; }
 	void setVertices(const std::vector<glm::vec3>& vertices) { mVertices = vertices; }
 	void setSVertices(const std::vector<glm::vec3>& vertices) { sVertices = vertices; }
 	void setVelocity(const glm::vec2& velocity) { mVelocity = velocity; }
+	void setMass(const float mass) { mMass = mass; }
+	void setRestitution(const float restitution) { mRestitution = restitution; }
+	void setInertia(const float inertia) { mInertia = inertia; }
+	void setAngularSpeed(const float angularSpeed) { mAngularSpeed = angularSpeed; }
+	void setAngularAcceleration(const float angularAcceleration) { mAngularAcceleration = angularAcceleration; }
 	void setRadius(const float radius) { mRadius = radius; }
 	void setColor(const glm::vec3& color) { mColor = color; }
 	void setAngle(const float angle) { mAngle = angle; }
@@ -59,6 +68,7 @@ public:
 	void setMesh(const GLMesh& mesh) { mMesh = mesh; }
 	void setShapeType(ShapeType type) { mShapeType = type; }
 	void setState(State state) { mState = state; }
+	void setHitRadius(const float hitRadius) { mHitRadius = hitRadius; }
 
 
 
@@ -79,6 +89,9 @@ private:
 	float mMass; // 質量
 	float mRestitution; // 反発係数
 	glm::vec2 mGravity; // 重力
+	float mInertia; // 慣性モーメント
+	float mAngularSpeed; //角速度
+	float mAngularAcceleration; //角加速度
 
 	float mAngle; // 角度
 	glm::vec3 mScale; // スケール
@@ -90,6 +103,17 @@ private:
 	glm::mat4 mModel;
 
 	GLMesh mMesh; //基準となるメッシュ
+
+	// hitbox
+	float mHitRadius;
+
+protected:
+	virtual void collisionCup();
+	virtual void solveCollisionCup(glm::vec2 normal, glm::vec2 contactPoint);
+	
 	
 };
 
+inline float cross2D(const glm::vec2& a, const glm::vec2& b) {
+	return a.x * b.y - a.y * b.x;
+}
