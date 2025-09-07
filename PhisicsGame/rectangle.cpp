@@ -14,11 +14,23 @@ Rectangle::~Rectangle() {
 
 void Rectangle::initialize(class Play* play) {
 	Object::initialize(play);
+
+	// Šµ«ƒ‚[ƒƒ“ƒg
+	setInertia(getMass() / 6.0f * (getScale().x * getScale().x + getScale().y * getScale().y)*0.8f);
+	
+	// hitbox
+	float hitRadius = 0.0f;
+	for (auto& v : getVertices()) {
+		hitRadius = std::max(hitRadius, glm::length(getCenter() - v));
+	}
+
+	setHitRadius(hitRadius);
+
 }
 
 void Rectangle::update(float deltaTime) {
 	Object::update(deltaTime);
-	setAngle(getAngle() + glm::radians(30.0f) * deltaTime);
+	collisionCup();
 }
 
 void Rectangle::draw(Shader& shader) {

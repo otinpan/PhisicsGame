@@ -16,29 +16,34 @@ Circle::~Circle() {
 
 void Circle::initialize(class Play* play) {
 	Object::initialize(play);
+	// Šµ«ƒ‚[ƒƒ“ƒg
+	setInertia(0.5f * getMass() * getRadius() * getRadius()*0.8f);
+	// hitbox
+	setHitRadius(getRadius());
 }
 
 void Circle::update(float deltaTime) {
+
 	Object::update(deltaTime);
 
-	float e = (float)(getRestitution() + getPlay()->getCup()->getRestitution()) / 2.0f;
-
-	//¶‚Ì•Ç‚ÆÕ“Ë
+	glm::vec2 offset(0.0f, 0.0f);
+	// ¶‚Ì•Ç‚ÆÕ“Ë
 	if (getCenter().x - getRadius() < getPlay()->getCup()->getLeft()) {
-		setCenter(glm::vec3(getPlay()->getCup()->getLeft() + getRadius(), getCenter().y, 0.0f));
-		setVelocity(glm::vec2(-getVelocity().x * e, getVelocity().y));
+		offset.x = (getPlay()->getCup()->getLeft() - (getCenter().x - getRadius())) * 0.95f;
+		solveCollisionCup(glm::vec2(1.0f, 0.0f), glm::vec2(getPlay()->getCup()->getLeft(), getCenter().y));
 	}
 	// ‰E‚Ì•Ç‚ÆÕ“Ë
 	if (getCenter().x + getRadius() > getPlay()->getCup()->getRight()) {
-		setCenter(glm::vec3(getPlay()->getCup()->getRight() - getRadius(), getCenter().y, 0.0f));
-		setVelocity(glm::vec2(-getVelocity().x * e, getVelocity().y));
+		offset.x = -((getCenter().x + getRadius()) - getPlay()->getCup()->getRight()) * 0.95f;
+		solveCollisionCup(glm::vec2(-1.0f, 0.0f), glm::vec2(getPlay()->getCup()->getRight(), getCenter().y));
 	}
 	// ’ê–Ê‚ÆÕ“Ë
 	if (getCenter().y - getRadius() < getPlay()->getCup()->getBottom()) {
-		setCenter(glm::vec3(getCenter().x, getPlay()->getCup()->getBottom() + getRadius(), 0.0f));
-		setVelocity(glm::vec2(getVelocity().x, -getVelocity().y * e));
+		offset.y = (getPlay()->getCup()->getBottom() - (getCenter().y - getRadius())) * 0.95f;
+		solveCollisionCup(glm::vec2(0.0f, 1.0f), glm::vec2(getCenter().x, getPlay()->getCup()->getBottom()));
 	}
 
+	setCenter(getCenter() + glm::vec3(offset, 0.0f));
 }
 
 void Circle::draw(Shader& shader) {

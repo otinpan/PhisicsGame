@@ -97,8 +97,8 @@ void Play::processInput(Parent* parent,float deltaTime) {
 		addTriangle(
 			glm::vec3(mInputState.mouseX, mInputState.mouseY, 0.0f),
 			glm::vec3(1.0f, 0.0f, 0.0f),
-			30.0f,
-			0.3f,
+			100.0f,
+			0.1f,
 			glm::vec3(s, s, 1.0f),
 			a
 		);
@@ -119,8 +119,8 @@ void Play::processInput(Parent* parent,float deltaTime) {
 		addRectangle(
 			glm::vec3(mInputState.mouseX, mInputState.mouseY, 0.0f),
 			glm::vec3(0.0f, 1.0f, 0.0f),
-			30.0f,
-			0.3f,
+			100.0f,
+			0.1f,
 			glm::vec3(s, s, 1.0f),
 			a
 		);
@@ -140,8 +140,8 @@ void Play::processInput(Parent* parent,float deltaTime) {
 		addCircle(
 			glm::vec3(mInputState.mouseX, mInputState.mouseY, 0.0f),
 			glm::vec3(0.0f, 0.0f, 1.0f),
-			30.0f,
-			0.3f,
+			100.0f,
+			0.1f,
 			glm::vec3(s, s, 1.0f)
 		);
 		mIsCircleCooldown = true;

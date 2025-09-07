@@ -56,6 +56,10 @@ void Object::initialize(class Play* play) {
 
 void Object::update(float deltaTime) {
 	mVelocity += mGravity * deltaTime;
+
+	mAngularSpeed += mAngularAcceleration * deltaTime;
+	mAngle += mAngularSpeed * deltaTime;
+
 	setCenter(getCenter() + glm::vec3(getVelocity() * deltaTime, 0.0f));
 
 	glm::mat4 model(1.0f);
@@ -71,7 +75,7 @@ void Object::update(float deltaTime) {
 
 	setVertices(transformedVertices);
 
-	collisionCup();
+
 }
 
 void Object::collisionCup() {
@@ -155,14 +159,18 @@ void Object::solveCollisionCup(glm::vec2 n,glm::vec2 p){
 	// 重心から衝突点へのベクトル
 	glm::vec2 r = p - glm::vec2(mCenter);
 
+	float e = (float)(getRestitution() + getPlay()->getCup()->getRestitution()) / 2.0f;
+
 	// 衝突前の速度
 	glm::vec2 vp = mVelocity + glm::vec2(-r.y * mAngularSpeed, r.x * mAngularSpeed);
+	
 
 	// 法線方向の速さ
 	float vpn = glm::dot(vp, n);
+	if (vpn >= 0.0f)return;
 
 	// impluse
-	float jn = -(1.0f + mRestitution) * vpn / (1.0f / mMass + (r.x * n.y - r.y * n.x) * (r.x * n.y - r.y * n.x) / mInertia);
+	float jn = -(1.0f + e) * vpn / (1.0f / mMass + (r.x * n.y - r.y * n.x) * (r.x * n.y - r.y * n.x) / mInertia);
 
 	// world座標
 	glm::vec2 J = n * jn;

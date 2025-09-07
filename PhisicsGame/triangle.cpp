@@ -15,10 +15,21 @@ Triangle::~Triangle() {
 void Triangle::initialize(class Play* play) {
 	Object::initialize(play);
 
+	// Šµ«ƒ‚[ƒƒ“ƒg
+	setInertia(1.0f / 12.0f * (getScale().x * getScale().x + getScale().y * getScale().y) * getMass()*0.8f);
+
+	// hitbox
+	float hitRadius = 0.0f;
+	for (auto& v : getVertices()) {
+		hitRadius = std::max(hitRadius, glm::length(getCenter() - v));
+	}
+
+	setHitRadius(hitRadius);
 }
 
 void Triangle::update(float deltaTime) {
 	Object::update(deltaTime);
+	collisionCup();
 }
 
 void Triangle::draw(Shader& shader) {
