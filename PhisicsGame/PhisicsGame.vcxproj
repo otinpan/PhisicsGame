@@ -152,6 +152,8 @@ copy /Y "D:\OpenGLDev\Libs\assimp-vc143-mtd.dll" "$(OutDir)"
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="triangle.cpp" />
     <ClCompile Include="circle.cpp" />
+    <ClCompile Include="ui.cpp" />
+    <ClCompile Include="uiObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
@@ -168,6 +170,8 @@ copy /Y "D:\OpenGLDev\Libs\assimp-vc143-mtd.dll" "$(OutDir)"
     <ClInclude Include="shader.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="triangle.h" />
+    <ClInclude Include="ui.h" />
+    <ClInclude Include="uiObject.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment_normal.glsl" />

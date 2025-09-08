@@ -29,6 +29,9 @@ public:
 	// getter
 	const std::vector<class Object*>& getObjects() { return mObjects; }
 	class Cup* getCup() { return mCup; }
+	GLMesh& getTriangleMesh() { return sTriangleMesh; }
+	GLMesh& getRectangleMesh() { return sRectangleMesh; }
+	GLMesh& getCircleMesh() { return sCircleMesh; }
 
 	// sequence
 	void moveTo(Parent* parent, Parent::SeqID id);
@@ -41,6 +44,7 @@ private:
 	void unloadData();
 
 	class Cup* mCup;
+	class UI* mUI;
 	std::vector<class Object*> mObjects;
 	std::vector<class Object*> mPendingObjects;
 
@@ -80,7 +84,6 @@ private:
 	class Shader* mShader;
 
 	// random
-	// Play.h
 	std::mt19937 rng{ std::random_device{}() };
 	std::uniform_real_distribution<float> distScale{ 0.1f, 0.3f };
 	std::uniform_real_distribution<float> distAngleDeg{ 0.0f, 360.0f };

@@ -12,6 +12,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <random>
+#include "ui.h"
 
 
 Play::Play()
