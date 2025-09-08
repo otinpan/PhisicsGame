@@ -144,6 +144,7 @@ copy /Y "D:\OpenGLDev\Libs\assimp-vc143-mtd.dll" "$(OutDir)"
     <ClCompile Include="GLMesh.cpp" />
     <ClCompile Include="intersect.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="motherObject.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="parent.cpp" />
     <ClCompile Include="play.cpp" />
@@ -159,6 +160,7 @@ copy /Y "D:\OpenGLDev\Libs\assimp-vc143-mtd.dll" "$(OutDir)"
     <ClInclude Include="GLMesh.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="intersect.h" />
+    <ClInclude Include="motherObject.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="parent.h" />
     <ClInclude Include="play.h" />

@@ -52,8 +52,18 @@ glm::vec2 LineSegment::getIntersectPos(const LineSegment& other)const {
 
 
 bool isIntersects(Object* A, Object* B) {
+	// objectが同じなら衝突しない
+	if (A == B)return false;
+
+	// motherが同じなら衝突しない
+	if (A->getIsCombined() && B->getIsCombined()) {
+		if (A->getMotherObject() == B->getMotherObject()) {
+			return false;
+		}
+	}
+
 	// hitboxで粗い判定
-	glm::vec2 rel = glm::vec2(A->getCenter() - B->getCenter());
+	glm::vec2 rel = glm::vec2(A->getPosition() - B->getPosition());
 	if ((rel.x * rel.x + rel.y * rel.y) > (A->getHitRadius() + B->getHitRadius()) * (A->getHitRadius() + B->getHitRadius())) {
 		return false;
 	}
@@ -62,19 +72,19 @@ bool isIntersects(Object* A, Object* B) {
 		isIntersectsCC(A, B);
 	}
 	if (A->getShapeType() == ShapeType::SHAPE_CIRCLE && B->getShapeType() != ShapeType::SHAPE_CIRCLE) {
-		isIntersectsCP(A, B);
+		return isIntersectsCP(A, B);
 	}
 	if (A->getShapeType() != ShapeType::SHAPE_CIRCLE && B->getShapeType() == ShapeType::SHAPE_CIRCLE) {
-		isIntersectsCP(B, A);
+		return isIntersectsCP(B, A);
 	}
 	if (A->getShapeType() != ShapeType::SHAPE_CIRCLE && B->getShapeType() != ShapeType::SHAPE_CIRCLE) {
-		isIntersectsPP(A, B);
+		return isIntersectsPP(A, B);
 	}
 	return false;
 }
 
 bool isIntersectsCC(Object* c1, Object* c2) {
-	glm::vec2 rel = c1->getCenter() - c2->getCenter();
+	glm::vec2 rel = c1->getPosition() - c2->getPosition();
 	if ((rel.x * rel.x + rel.y * rel.y) > (c1->getRadius() + c2->getRadius()) * (c1->getRadius() + c2->getRadius())) {
 		return false;
 	}
@@ -88,11 +98,13 @@ bool isIntersectsCC(Object* c1, Object* c2) {
 	float overlap = ((c1->getRadius() + c2->getRadius()) - glm::length(rel));
 	if (overlap > 0.0f) {
 		glm::vec2 offset = n * overlap / 1.95f;
-		c1->setCenter(c1->getCenter() + glm::vec3(offset,0.0f));
-		c2->setCenter(c2->getCenter() - glm::vec3(offset, 0.0f));
+		c1->updateCenter(glm::vec3(offset, 0.0f));
+		c1->updatePosition(glm::vec3(offset, 0.0f));
+		c2->updateCenter(glm::vec3(offset, 0.0f));
+		c2->updatePosition(glm::vec3(offset, 0.0f));
 	}
 
-	updateParameters(c1, c2, n, (c1->getCenter() + c2->getCenter()) / 2.0f);
+	updateParameters(c1, c2, n, (c1->getPosition() + c2->getPosition()) / 2.0f);
 	return true;
 }
 
@@ -106,8 +118,8 @@ bool isIntersectsCP(Object* c, Object* p) {
 	int size = p->getVertices().size();
 	for (int i = 0; i < size; i++) {
 		LineSegment s(p->getVertices()[i % size], p->getVertices()[(i + 1) % size]);
-		glm::vec2 d = s.getMinDistancePos(c->getCenter()); // circleの中心から一番近い点
-		glm::vec2 v = d - glm::vec2(c->getCenter());
+		glm::vec2 d = s.getMinDistancePos(c->getPosition()); // circleの中心から一番近い点
+		glm::vec2 v = d - glm::vec2(c->getPosition());
 		float dis = glm::length(v);
 		if (dis <= c->getRadius()) {
 			isIntersects = true;
@@ -125,11 +137,10 @@ bool isIntersectsCP(Object* c, Object* p) {
 	float overlap = c->getRadius() - minDis;
 	glm::vec2 offset = minVec * overlap / 1.95f;
 
-	p->setCenter(p->getCenter() + glm::vec3(offset,0.0f));
-	auto verts = p->getVertices();
-	for (auto& q : verts) { q += glm::vec3(offset,0.0f); }
-	p->setVertices(verts);
-	c->setCenter(c->getCenter() - glm::vec3(offset,0.0f));
+	p->updateCenter(glm::vec3(offset, 0.0f));
+	p->updatePosition(glm::vec3(offset, 0.0f));
+	c->updateCenter(glm::vec3(-offset, 0.0f));
+	c->updatePosition(glm::vec3(-offset, 0.0f));
 
 	// 停止しているなら更新しない
 	if (c->getAngularSpeed() < M_PI / 30.0f && p->getAngularSpeed() < M_PI / 30.0f) {
@@ -165,7 +176,7 @@ bool isIntersectsPP(Object* p1, Object* p2) {
 	glm::vec2 dir = intersectPoints[1] - intersectPoints[0];
 	glm::vec2 n;
 	if (dir.x * dir.x + dir.y * dir.y < EPS * EPS) {
-		n = p1->getCenter() - p2->getCenter();
+		n = p1->getPosition() - p2->getPosition();
 		n = glm::normalize(n);
 	}
 	else {
@@ -200,19 +211,16 @@ bool isIntersectsPP(Object* p1, Object* p2) {
 	// 位置の更新
 	glm::vec2 offset = n * overlap / 1.95f;
 	// 法線ベクトルと作用点から重心へのベクトルが鈍角なら反転
-	if (glm::dot(n, glm::vec2(p1->getCenter()) - fp) < 0.0f) {
+	if (glm::dot(n, glm::vec2(p1->getPosition()) - fp) < 0.0f) {
 		offset = -offset;
 	}
 
-	p1->setCenter(p1->getCenter() + glm::vec3(offset, 0.0f)); 
-	auto verts1 = p1->getVertices();
-	for (auto& q : verts1) { q += glm::vec3(offset, 0.0f); }
-	p1->setVertices(verts1);
 
-	p2->setCenter(p2->getCenter() - glm::vec3(offset, 0.0f));
-	auto verts2 = p2->getVertices();
-	for (auto& q : verts2) { q -= glm::vec3 (offset, 0.0f); }
-	p2->setVertices(verts2);
+	p1->updateCenter(glm::vec3(offset, 0.0f));
+	p1->updatePosition(glm::vec3(offset, 0.0f));
+
+	p2->updateCenter(glm::vec3(-offset, 0.0f));
+	p2->updatePosition(glm::vec3(-offset, 0.0f));
 
 	return true;
 }
@@ -245,10 +253,10 @@ void updateParameters(Object* A, Object* B, glm::vec2 n, glm::vec2 p) {
 	glm::vec2 J = n * jn;
 
 	// 速度の更新
-	A->setVelocity(A->getVelocity() + J / A->getMass());
-	B->setVelocity(B->getVelocity() - J / B->getMass());
+	A->updateVelocity( J / A->getMass());
+	B->updateVelocity(- J / B->getMass());
 
 	// 角速度の更新
-	A->setAngularSpeed(A->getAngularSpeed() + cross2D(ra, J) / A->getInertia());
-	B->setAngularSpeed(B->getAngularSpeed() - cross2D(rb, J) / B->getInertia());
+	A->updateAngularSpeed(cross2D(ra, J) / A->getInertia());
+	B->updateAngularSpeed(-cross2D(rb, J) / B->getInertia());
 }

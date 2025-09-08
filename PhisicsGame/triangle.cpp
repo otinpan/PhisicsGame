@@ -21,7 +21,7 @@ void Triangle::initialize(class Play* play) {
 	// hitbox
 	float hitRadius = 0.0f;
 	for (auto& v : getVertices()) {
-		hitRadius = std::max(hitRadius, glm::length(getCenter() - v));
+		hitRadius = std::max(hitRadius, glm::length(getPosition() - v));
 	}
 
 	setHitRadius(hitRadius);

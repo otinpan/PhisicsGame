@@ -28,22 +28,23 @@ void Circle::update(float deltaTime) {
 
 	glm::vec2 offset(0.0f, 0.0f);
 	// ¶‚Ì•Ç‚ÆÕ“Ë
-	if (getCenter().x - getRadius() < getPlay()->getCup()->getLeft()) {
-		offset.x = (getPlay()->getCup()->getLeft() - (getCenter().x - getRadius())) * 0.95f;
+	if (getPosition().x - getRadius() < getPlay()->getCup()->getLeft()) {
+		offset.x = (getPlay()->getCup()->getLeft() - (getPosition().x - getRadius())) * 0.95f;
 		solveCollisionCup(glm::vec2(1.0f, 0.0f), glm::vec2(getPlay()->getCup()->getLeft(), getCenter().y));
 	}
 	// ‰E‚Ì•Ç‚ÆÕ“Ë
-	if (getCenter().x + getRadius() > getPlay()->getCup()->getRight()) {
-		offset.x = -((getCenter().x + getRadius()) - getPlay()->getCup()->getRight()) * 0.95f;
+	if (getPosition().x + getRadius() > getPlay()->getCup()->getRight()) {
+		offset.x = -((getPosition().x + getRadius()) - getPlay()->getCup()->getRight()) * 0.95f;
 		solveCollisionCup(glm::vec2(-1.0f, 0.0f), glm::vec2(getPlay()->getCup()->getRight(), getCenter().y));
 	}
 	// ’ê–Ê‚ÆÕ“Ë
-	if (getCenter().y - getRadius() < getPlay()->getCup()->getBottom()) {
-		offset.y = (getPlay()->getCup()->getBottom() - (getCenter().y - getRadius())) * 0.95f;
+	if (getPosition().y - getRadius() < getPlay()->getCup()->getBottom()) {
+		offset.y = (getPlay()->getCup()->getBottom() - (getPosition().y - getRadius())) * 0.95f;
 		solveCollisionCup(glm::vec2(0.0f, 1.0f), glm::vec2(getCenter().x, getPlay()->getCup()->getBottom()));
 	}
 
-	setCenter(getCenter() + glm::vec3(offset, 0.0f));
+	updateCenter(glm::vec3(offset,0.0f));
+	updatePosition(glm::vec3(offset, 0.0f));
 }
 
 void Circle::draw(Shader& shader) {

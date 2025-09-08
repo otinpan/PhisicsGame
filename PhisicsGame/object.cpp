@@ -7,6 +7,7 @@
 
 Object::Object(glm::vec3 center, glm::vec3 rgb, GLMesh& mesh, float mass, float restitution, glm::vec3 scale, float angle)
 	: mCenter(center)
+	, mPosition(center)
 	, mColor(rgb)
 	, mVelocity(glm::vec2(0.0f, 0.0f))
 	, mAngle(angle)
@@ -14,11 +15,16 @@ Object::Object(glm::vec3 center, glm::vec3 rgb, GLMesh& mesh, float mass, float 
 	, mModel(1.0f)
 	, mMesh(mesh)
 	, mPlay(nullptr)
+	, mMotherObject(nullptr)
 	, mMass(mass)
 	, mRestitution(restitution)
 	, mState(ACTIVE)
 	, mRadius(0.0f)
 	, mGravity(glm::vec2(0.0f, -0.1f))
+	, mIsCombined(false)
+	, mIsMother(false)
+	, sCombinedAngle(0.0f)
+	, sCombinedOffset(glm::vec2(0.0f, 0.0f))
 {
 }
 
@@ -40,7 +46,7 @@ void Object::initialize(class Play* play) {
 
 
 	glm::mat4 model(1.0f);
-	model = glm::translate(model, getCenter());
+	model = glm::translate(model, getPosition());
 	model = glm::rotate(model, getAngle(), glm::vec3(0, 0, 1));
 	model = glm::scale(model, getScale());
 	setModel(model);
@@ -60,10 +66,11 @@ void Object::update(float deltaTime) {
 	mAngularSpeed += mAngularAcceleration * deltaTime;
 	mAngle += mAngularSpeed * deltaTime;
 
-	setCenter(getCenter() + glm::vec3(getVelocity() * deltaTime, 0.0f));
+	setCenter(mCenter + glm::vec3(getVelocity() * deltaTime, 0.0f));
+	setPosition(mCenter);
 
 	glm::mat4 model(1.0f);
-	model = glm::translate(model, getCenter());
+	model = glm::translate(model, getPosition());
 	model = glm::rotate(model, getAngle(), glm::vec3(0, 0, 1));
 	model = glm::scale(model, getScale());
 	setModel(model);
@@ -74,9 +81,79 @@ void Object::update(float deltaTime) {
 	}
 
 	setVertices(transformedVertices);
-
-
 }
+
+void Object::updateCenter(glm::vec3 offset) {
+	glm::vec3 center = mCenter + offset;
+
+	//合体しているとき
+	if (mIsCombined) {
+		mMotherObject->getMotherObject()->setCenter(center);
+		for (auto& child : mMotherObject->getChildren()) {
+			child->setCenter(center);
+		}
+	}
+	else {
+		mCenter += offset;
+	}
+}
+
+void Object::updatePosition(glm::vec3 offset) {
+
+	// 合体しているとき
+	if (mIsCombined) {
+		mMotherObject->getMotherObject()->setPosition(offset + mMotherObject->getMotherObject()->getPosition());
+		auto verts = mMotherObject->getMotherObject()->getVertices();
+		for (auto& v : verts) {
+			v += offset;
+		}
+		mMotherObject->getMotherObject()->setVertices(verts);
+
+		for (auto& child : mMotherObject->getChildren()) {
+			child->setPosition(offset + child->getPosition());
+			auto verts = child->getVertices();
+			for (auto& v : verts) {
+				v += offset;
+			}
+			child->setVertices(verts);
+		}
+	}
+	else {
+		mPosition += offset;
+		for (auto& v : mVertices) {
+			v += offset;
+		}
+	}
+}
+
+void Object::updateVelocity(glm::vec2 offset) {
+	glm::vec2 velocity = mVelocity + offset;
+	// 合体しているとき
+	if (mIsCombined) {
+		mMotherObject->getMotherObject()->setVelocity(velocity);
+		for (auto& child : mMotherObject->getChildren()) {
+			child->setVelocity(velocity);
+		}
+	}
+	else {
+		mVelocity += offset;
+	}
+}
+
+void Object::updateAngularSpeed(float offset) {
+	float angularSpeed = mAngularSpeed + offset;
+	// 合体しているとき
+	if (mIsCombined) {
+		mMotherObject->getMotherObject()->setAngularSpeed(angularSpeed);
+		for (auto& child : mMotherObject->getChildren()) {
+			child->setAngularSpeed(angularSpeed);
+		}
+	}
+	else {
+		mAngularSpeed += offset;
+	}
+}
+
 
 void Object::collisionCup() {
 	float percent = 0.95f;
@@ -116,12 +193,8 @@ void Object::collisionCup() {
 
 	if (bottom.size() == 2) {
 		if (abs(mAngularSpeed) < M_PI / 30.0f) {
-			setCenter(mCenter + glm::vec3(offset, 0.0f));
-			setAngularSpeed(0.0f);
-			setVelocity(glm::vec2(0.0f, 0.0f));
-			for (auto& v : mVertices) {
-				v += glm::vec3(offset, 0.0f);
-			}
+			updateCenter(glm::vec3(offset, 0.0f));
+			updatePosition(glm::vec3(offset, 0.0f));
 			return;
 		}
 	}
@@ -149,10 +222,8 @@ void Object::collisionCup() {
 	}
 
 	// 位置の更新
-	setCenter(mCenter + glm::vec3(offset, 0.0f));
-	for (auto& v : mVertices) {
-		v += glm::vec3(offset, 0.0f);
-	}
+	updateCenter(glm::vec3(offset, 0.0f));
+	updatePosition(glm::vec3(offset, 0.0f));
 }
 
 void Object::solveCollisionCup(glm::vec2 n,glm::vec2 p){
@@ -176,8 +247,8 @@ void Object::solveCollisionCup(glm::vec2 n,glm::vec2 p){
 	glm::vec2 J = n * jn;
 
 	// 速度の更新
-	mVelocity += J / mMass;
-	mAngularSpeed += (r.x * J.y - r.y * J.x) / mInertia;
+	updateVelocity( J / mMass);
+	updateAngularSpeed((r.x * J.y - r.y * J.x) / mInertia);
 }
 
 void Object::processInput(const InputState& state) {
@@ -187,3 +258,19 @@ void Object::processInput(const InputState& state) {
 void Object::draw(Shader& shader) {
 }
 
+
+void CombineObject(class Object* obj1, class Object* obj2) {
+	// どちらも単体の場合
+	if (!obj1->getIsCombined() && !obj2->getIsCombined()) {
+		MotherObject* mother = new MotherObject(obj1);
+		mother->addChild(obj2); //centerの更新、obj2の相対位置の設定
+	}
+	// obj1が合体していてobj2が単体の場合
+	else if (obj1->getIsCombined() && !obj2->getIsCombined()) {
+		obj1->getMotherObject()->addChild(obj2);
+	}
+	// obj2が合体していてobj1が単体の場合
+	else if (!obj1->getIsCombined() && obj2->getIsCombined()) {
+		obj2->getMotherObject()->addChild(obj1);
+	}
+}
