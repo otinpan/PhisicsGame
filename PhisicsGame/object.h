@@ -42,6 +42,7 @@ public:
 	const std::vector<glm::vec3>& getSVertices() { return sVertices; }
 	const glm::vec2& getVelocity() { return mVelocity; }
 	const float getRadius() { return mRadius; }
+    const glm::vec2& getGravity() { return mGravity; }
 	const float getMass() { return mMass; }
 	const float getRestitution() { return mRestitution; }
 	const float getInertia() { return mInertia; }
@@ -61,7 +62,9 @@ public:
 	const float getIsCombined() { return mIsCombined; }
 	const bool getIsMother() { return mIsMother; }
 	const float getSMotherAngle() { return sMotherAngle; }
+	const float getSCombinedAngle() { return sCombinedAngle; }
 	const glm::vec2 getSMotherOffset() { return sMotherOffset; }
+	const float getPartialMass() { return mPartialMass; }
 
 
 	// setter
@@ -89,6 +92,8 @@ public:
 	void setMotherObject(class MotherObject* mother) { mMotherObject = mother; }
 	void setIsMother(bool isMother) { mIsMother = isMother; }
 	void setSMotherAngle(float angle) { sMotherAngle = angle; }
+	void setPartialMass(float mass) { mPartialMass = mass; }
+	void setSCombinedAngle(float angle) { sCombinedAngle = angle; }
 	void setSMotherOffset(glm::vec2 offset) { sMotherOffset = offset; }
 
 
@@ -134,6 +139,8 @@ private:
 	bool mIsCombined;
 	bool mIsMother;
 	float sMotherAngle; // 合体時のmotherの角度
+	float sCombinedAngle; // 合体時の自分の角度
+	float mPartialMass; // 部分的な質量
 	glm::vec2 sMotherOffset; // 合体時のmotherからの相対座標
 
 protected:
@@ -141,7 +148,7 @@ protected:
 	virtual void solveCollisionCup(glm::vec2 normal, glm::vec2 contactPoint);
 };
 
-void CombineObject(class Ibject* obj1, class Object* obj2);
+void CombineObject(class Object* obj1, class Object* obj2);
 
 inline float cross2D(const glm::vec2& a, const glm::vec2& b) {
 	return a.x * b.y - a.y * b.x;

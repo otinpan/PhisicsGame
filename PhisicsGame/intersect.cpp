@@ -69,16 +69,28 @@ bool isIntersects(Object* A, Object* B) {
 	}
 	// 詳しい判定
 	if (A->getShapeType() == ShapeType::SHAPE_CIRCLE && B->getShapeType() == ShapeType::SHAPE_CIRCLE) {
-		isIntersectsCC(A, B);
+		if (isIntersectsCC(A, B)) {
+			//CombineObject(A, B);
+			return true;
+		}
 	}
-	if (A->getShapeType() == ShapeType::SHAPE_CIRCLE && B->getShapeType() != ShapeType::SHAPE_CIRCLE) {
-		return isIntersectsCP(A, B);
+	if (A->getShapeType() == ShapeType::SHAPE_CIRCLE && B->getShapeType() != ShapeType::SHAPE_CIRCLE) {	
+		if (isIntersectsCP(A, B)) {
+			//CombineObject(A, B);
+			return true;
+		}
 	}
 	if (A->getShapeType() != ShapeType::SHAPE_CIRCLE && B->getShapeType() == ShapeType::SHAPE_CIRCLE) {
-		return isIntersectsCP(B, A);
+		if (isIntersectsCP(B, A)) {
+			//CombineObject(A, B);
+			return true;
+		}
 	}
 	if (A->getShapeType() != ShapeType::SHAPE_CIRCLE && B->getShapeType() != ShapeType::SHAPE_CIRCLE) {
-		return isIntersectsPP(A, B);
+		if (isIntersectsPP(A, B)) {
+			//CombineObject(A, B);
+			return true;
+		}
 	}
 	return false;
 }
@@ -100,8 +112,15 @@ bool isIntersectsCC(Object* c1, Object* c2) {
 		glm::vec2 offset = n * overlap / 1.95f;
 		c1->updateCenter(glm::vec3(offset, 0.0f));
 		c1->updatePosition(glm::vec3(offset, 0.0f));
-		c2->updateCenter(glm::vec3(offset, 0.0f));
-		c2->updatePosition(glm::vec3(offset, 0.0f));
+		c2->updateCenter(glm::vec3(-offset, 0.0f));
+		c2->updatePosition(glm::vec3(-offset, 0.0f));
+	}
+
+	if (abs(c1->getAngularSpeed()) < M_PI / 1000.0f && abs(c1->getVelocity().x) < 0.01f && abs(c1->getVelocity().y) < 0.01f &&
+		abs(c2->getAngularSpeed()) < M_PI / 1000.0f && abs(c2->getVelocity().x) < 0.01f && abs(c2->getVelocity().y) < 0.01f)
+	{
+		CombineObject(c1, c2);
+		return true;
 	}
 
 	updateParameters(c1, c2, n, (c1->getPosition() + c2->getPosition()) / 2.0f);
@@ -143,7 +162,10 @@ bool isIntersectsCP(Object* c, Object* p) {
 	c->updatePosition(glm::vec3(-offset, 0.0f));
 
 	// 停止しているなら更新しない
-	if (c->getAngularSpeed() < M_PI / 30.0f && p->getAngularSpeed() < M_PI / 30.0f) {
+	if (abs(c->getAngularSpeed()) < M_PI / 1000.0f && abs(c->getVelocity().x) < 0.01f && abs(c->getVelocity().y) < 0.01f &&
+		abs(p->getAngularSpeed()) < M_PI / 1000.0f && abs(p->getVelocity().x) < 0.01f && abs(p->getVelocity().y) < 0.01f)
+	{
+		CombineObject(c, p);
 		return true;
 	}
 
@@ -205,8 +227,6 @@ bool isIntersectsPP(Object* p1, Object* p2) {
 	// 作用点
 	glm::vec2 fp = (intersectPoints[0] + intersectPoints[1]) / 2.0f;
 
-	// 速度の更新
-	updateParameters(p1, p2, n, fp);
 
 	// 位置の更新
 	glm::vec2 offset = n * overlap / 1.95f;
@@ -221,6 +241,16 @@ bool isIntersectsPP(Object* p1, Object* p2) {
 
 	p2->updateCenter(glm::vec3(-offset, 0.0f));
 	p2->updatePosition(glm::vec3(-offset, 0.0f));
+
+	if (abs(p1->getAngularSpeed()) < M_PI / 1000.0f && abs(p1->getVelocity().x) < 0.01f && abs(p1->getVelocity().y) < 0.01f &&
+		abs(p2->getAngularSpeed()) < M_PI / 1000.0f && abs(p2->getVelocity().x) < 0.01f && abs(p2->getVelocity().y) < 0.01f)
+	{
+		CombineObject(p1, p2);
+		return true;
+	}
+
+	// 速度の更新
+	updateParameters(p1, p2, n, fp);
 
 	return true;
 }
