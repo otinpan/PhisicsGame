@@ -61,6 +61,7 @@ void Object::initialize(class Play* play) {
 
 	setVertices(transformedVertices);
 
+
 }
 
 void Object::update(float deltaTime) {
@@ -111,6 +112,11 @@ void Object::update(float deltaTime) {
 	}
 
 	setVertices(transformedVertices);
+
+	// ƒQ[ƒ€I—¹
+    if (((float)getPosition().y > (float)getPlay()->getCup()->getTop() + 0.1f)   && mVelocity.y > 0.0f) {
+		mPlay->endGame();
+	}
 }
 
 void Object::updateCenter(glm::vec3 offset) {

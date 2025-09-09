@@ -142,6 +142,7 @@ copy /Y "D:\OpenGLDev\Libs\assimp-vc143-mtd.dll" "$(OutDir)"
     <ClCompile Include="cup.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GLMesh.cpp" />
+    <ClCompile Include="GLTextureMesh.cpp" />
     <ClCompile Include="intersect.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="motherObject.cpp" />
@@ -150,6 +151,7 @@ copy /Y "D:\OpenGLDev\Libs\assimp-vc143-mtd.dll" "$(OutDir)"
     <ClCompile Include="play.cpp" />
     <ClCompile Include="rectangle.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="texture.cpp" />
     <ClCompile Include="triangle.cpp" />
     <ClCompile Include="circle.cpp" />
     <ClCompile Include="ui.cpp" />
@@ -163,6 +165,7 @@ copy /Y "D:\OpenGLDev\Libs\assimp-vc143-mtd.dll" "$(OutDir)"
     <ClInclude Include="circle.h" />
     <ClInclude Include="cup.h" />
     <ClInclude Include="GLMesh.h" />
+    <ClInclude Include="GLTextureMesh.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="intersect.h" />
     <ClInclude Include="motherObject.h" />
@@ -172,6 +175,7 @@ copy /Y "D:\OpenGLDev\Libs\assimp-vc143-mtd.dll" "$(OutDir)"
     <ClInclude Include="rectangle.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="texture.h" />
     <ClInclude Include="triangle.h" />
     <ClInclude Include="ui.h" />
     <ClInclude Include="uiCircle.h" />
@@ -181,7 +185,9 @@ copy /Y "D:\OpenGLDev\Libs\assimp-vc143-mtd.dll" "$(OutDir)"
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment_normal.glsl" />
+    <None Include="fragment_texture.glsl" />
     <None Include="vertex_normal.glsl" />
+    <None Include="vertex_texture.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

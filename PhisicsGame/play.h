@@ -22,6 +22,8 @@ public:
 
 	void setHaveObject(class Object* obj);
 
+	void endGame();
+
 	// hitstop
 	void setIsHitstop(bool isHitstop) { mIsHitstop = isHitstop; }
 	bool getIsHitstop() { return mIsHitstop; }
@@ -51,6 +53,8 @@ private:
 	std::vector<class Object*> mObjects;
 	std::vector<class Object*> mPendingObjects;
 	class Object* mHaveObject; // playerが持っているオブジェクト
+
+	bool mIsEnd;
 
 	bool mIsRunning;
 	bool mUpdatingObjects;
@@ -91,10 +95,11 @@ private:
 
 	// Shader
 	class Shader* mShader;
+	class Shader* mTextureShader;
 
 	// random
 	std::mt19937 rng{ std::random_device{}() };
-	std::uniform_real_distribution<float> distScale{ 0.1f, 0.25f };
+	std::uniform_real_distribution<float> distScale{ 0.15f, 0.25f };
 	std::uniform_int_distribution<int> distShapeType{ 0,2 };
 
 };

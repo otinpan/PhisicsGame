@@ -7,9 +7,13 @@
 #include "uiCircle.h"
 #include "uiRectangle.h"
 #include "uiTriangle.h"
+#include "texture.h"
+#include <string>
 
 UI::UI()
 	:mPlay(nullptr)
+	,mScore(0)
+	, mEndObject(nullptr)
 {
 
 }
@@ -29,6 +33,33 @@ void UI::initialize(class Play* play) {
 	createUIObject(mUIObjectTopPos);
 	createUIObject(mUIObjectMiddlePos);
 	createUIObject(mUIObjectBottomPos);
+	
+
+	// texture
+	sTextureMesh = createInitTexture();
+
+	numTextures.resize(10);
+	std::vector<std::string> fileNames = {
+		"Assets/zero.png",
+		"Assets/one.png",
+		"Assets/two.png",
+		"Assets/three.png",
+		"Assets/four.png",
+		"Assets/five.png",
+		"Assets/six.png",
+		"Assets/seven.png",
+		"Assets/eight.png",
+		"Assets/nine.png",
+	};
+	for (int i = 0; i < 10; i++) {
+		numTextures[i] = new Texture(
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.15f, 0.15f, 1.0f),
+			sTextureMesh,
+			0.0f
+		);
+		numTextures[i]->initialize(fileNames[i].c_str());
+	}
 
 }
 
@@ -41,12 +72,55 @@ void UI::update(float deltaTime) {
 	mUIObjects[0]->setPosition(mUIObjectTopPos);
 	mUIObjects[1]->setPosition(mUIObjectMiddlePos);
 	mUIObjects[2]->setPosition(mUIObjectBottomPos);
+
+	// score
+	mScoreTextures.clear();
+
+
+	int nowScore = mScore;
+	while (nowScore > 0) {
+		int num = nowScore % 10;
+		mScoreTextures.emplace_back(numTextures[num]);
+		nowScore /= 10;
+	}
+	if (mScoreTextures.size() == 0) {
+		mScoreTextures.emplace_back(numTextures[0]);
+	}
 }
 
 void UI::drawUIObject(Shader& shader) {
 	for (auto& obj : mUIObjects) {
 		obj->draw(shader);
 	}
+
+	if (mEndObject) {
+		mEndObject->draw(shader);
+	}
+}
+
+void UI::drawTexture(Shader& shader) {
+	shader.use();
+	if (mEndTextures.size() != 0) {
+		glm::vec3 mPos = glm::vec3(0.3f, 0.0f, -1.0f);
+		for (auto& tex : mEndTextures) {
+			tex->setPosition(mPos);
+			tex->setScale(glm::vec3(0.4f, 0.4f, 1.0f));
+			tex->draw(shader);
+			mPos.x -= 0.4f;
+
+		}
+		return;
+	}
+	glm::vec3 mPos = glm::vec3(
+		mPlay->getCup()->getLeft() - 0.3f,
+		mPlay->getCup()->getTop() ,
+		0.0f);
+	for (auto& tex : mScoreTextures) {
+		tex->setPosition(mPos);
+		tex->draw(shader);
+		mPos.x -= 0.15f;
+	}
+
 }
 
 void UI::createUIObject(glm::vec3 pos) {
@@ -124,5 +198,31 @@ objectData UI::takeUIObject() {
 
 	createUIObject(mUIObjectBottomPos);
 
+
+	// ƒXƒRƒA‚Ì‰ÁŽZ
+	mScore++;
+
 	return data;
+}
+
+void UI::endGame() {
+	mEndObject = new UIRectangle(
+		glm::vec3(0.0f, 0.0f, -1.0f),
+		glm::vec3(1.30f, 1.0f, 1.0f),
+		mPlay->getRectangleMesh(),
+		0.0f,
+		0.0f,
+		glm::vec3(2.5f, 1.5f, 1.0f)
+	);
+
+	int nowScore = mScore;
+	while (nowScore > 0) {
+		int num = nowScore % 10;
+		mEndTextures.emplace_back(numTextures[num]);
+		nowScore /= 10;
+	}
+	if (mEndTextures.size() == 0) {
+		mEndTextures.emplace_back(numTextures[0]);
+	}
+	printf("endTexture size: %d\n", (int)mEndTextures.size());
 }

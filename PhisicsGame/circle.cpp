@@ -55,3 +55,5 @@ void Circle::draw(Shader& shader) {
 	glBindVertexArray(getMesh().VAO);
 	glDrawElements(GL_TRIANGLES, getMesh().indexCount, GL_UNSIGNED_INT, 0);
 }
+
+

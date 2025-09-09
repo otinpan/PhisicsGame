@@ -47,7 +47,6 @@ bool Play::initialize() {
 	mLastTime = std::chrono::steady_clock::now();
 	mAccumulator = 0.0f;
 	loadData();
-
 	return true;
 }
 
@@ -65,14 +64,16 @@ void Play::update(Parent* parent) {
 		mAccumulator += frameTime;
 
 
-		int steps = 0;
-		const int kMaxSteps = 5;
-		while (mAccumulator >= deltaTime && steps < kMaxSteps) {
-			processInput(parent,deltaTime);
-			updatePlay(deltaTime);
-			mUI->update(deltaTime);
-			mAccumulator -= deltaTime;
-			++steps;
+		if (!mIsEnd) {
+			int steps = 0;
+			const int kMaxSteps = 5;
+			while (mAccumulator >= deltaTime && steps < kMaxSteps) {
+				processInput(parent, deltaTime);
+				updatePlay(deltaTime);
+				mUI->update(deltaTime);
+				mAccumulator -= deltaTime;
+				++steps;
+			}
 		}
 
 		draw();
@@ -209,11 +210,14 @@ void Play::draw() {
 		printf("%d %d\n", mScreenWidth, mScreenHeight);
 	}
 
+
 	mShader->use();
 	float aspect = (float)mScreenWidth / (float)mScreenHeight;
 	glm::mat4 projection = glm::ortho(-aspect, aspect, -1.0f, 1.0f, -1.0f, 1.0f);
 	mShader->setMatrix4("projection", projection);
 
+	mTextureShader->use();
+	mTextureShader->setMatrix4("projection", projection);
 
 	for (auto& obj : mObjects) {
 		if (obj) obj->draw(*mShader);
@@ -223,6 +227,15 @@ void Play::draw() {
 
 	
 	mUI->drawUIObject(*mShader);
+	mUI->drawTexture(*mTextureShader);
+
+
+}
+
+void Play::endGame() {
+	mIsEnd = true;
+	mUI->endGame();
+
 }
 
 
@@ -249,6 +262,7 @@ void Play::loadData() {
 
 	// Shader
 	mShader = new Shader("vertex_normal.glsl", "fragment_normal.glsl");
+	mTextureShader = new Shader("vertex_texture.glsl", "fragment_texture.glsl");
 
 	// Cup
 	mCup = new Cup();

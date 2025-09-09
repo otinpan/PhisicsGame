@@ -15,6 +15,11 @@ UIObject::UIObject(glm::vec3 pos, glm::vec3 rgb, GLMesh& mesh, float mass,
 	, mUI(0)
 {
 	mModel = glm::mat4(1.0f);
+	sVertices = mMesh.vertices;
+	mModel = glm::translate(mModel, mPosition);
+	mModel = glm::scale(mModel, mScale);
+
+	setModel(mModel);
 }
 
 UIObject::~UIObject() {
@@ -24,11 +29,6 @@ UIObject::~UIObject() {
 void UIObject::initialize(UI* ui) {
 	mUI = ui;
 
-	sVertices = mMesh.vertices;
-	mModel = glm::translate(mModel, mPosition);
-	mModel = glm::scale(mModel, mScale);
-
-	setModel(mModel);
 
 	if (mUI) mUI->addUIObject(this);
 }

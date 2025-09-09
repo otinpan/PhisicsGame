@@ -15,5 +15,6 @@ struct GLMesh {
 GLMesh createInitTriangle();
 GLMesh createInitRectangle();
 GLMesh createInitCircle(unsigned int segments = 32, float radius = 0.5f);
+GLMesh createInitTexture();
 void destroyMesh(GLMesh& m);
 
