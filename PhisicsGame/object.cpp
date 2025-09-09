@@ -20,7 +20,7 @@ Object::Object(glm::vec3 center, glm::vec3 rgb, GLMesh& mesh, float mass, float 
 	, mRestitution(restitution)
 	, mState(ACTIVE)
 	, mRadius(0.0f)
-	, mGravity(glm::vec2(0.0f, -0.1f))
+	, mGravity(glm::vec2(0.0f, 0.0f))
 	, mIsCombined(false)
 	, mIsMother(false)
 	, sMotherAngle(0.0f)
@@ -41,6 +41,7 @@ void Object::initialize(class Play* play) {
 	if (getPlay()) {
 		getPlay()->addObject(this);
 	}
+	mPlay->setHaveObject(this);
 
 	sVertices = getMesh().vertices;
 

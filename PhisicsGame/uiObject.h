@@ -2,6 +2,7 @@
 #include "GLMesh.h"
 #include "shader.h"
 
+
 class UIObject {
 public:
 	enum ShapeType {
@@ -14,9 +15,9 @@ public:
 		float restitution,glm::vec3 scale);
 	~UIObject();
 
-	void initialize(class Play* play);
-	void update(float deltaTime);
-	void draw(Shader& shader);
+	virtual void initialize(class UI* ui);
+	virtual void update(float deltaTime);
+	virtual void draw(Shader& shader);
 
 	// getter
 	const glm::vec3& getPosition() { return mPosition; }
@@ -27,6 +28,7 @@ public:
 	const glm::mat4& getModel() { return mModel; }
 	const GLMesh& getMesh() { return mMesh; }
 	ShapeType getShapeType() { return mShapeType; }
+	const bool getIsTop() { return mIsTop; }
 
 	// setter
 	void setPosition(const glm::vec3& pos) { mPosition = pos; }
@@ -37,12 +39,20 @@ public:
 	void setModel(const glm::mat4& model) { mModel = model; }
 	void setMesh(const GLMesh& mesh) { mMesh = mesh; }
 	void setShapeType(ShapeType type) { mShapeType = type; }
+	void setIsTop(bool isTop) { mIsTop = isTop; }
 
 private:
 	GLMesh mMesh;
-	class Play* mPlay;
+	class UI* mUI;
 
 	ShapeType mShapeType;
+
+	bool mIsTop = false;
+	
+	// 周期的にサイズが変わるようにする
+	float mScaleTime = 0.0f;
+	float scaleCycle = 1.5f;
+
 
 	glm::vec3 mPosition;
 	glm::vec3 mColor;

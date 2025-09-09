@@ -63,6 +63,15 @@
     <ClCompile Include="uiObject.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="uiCircle.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="uiRectangle.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="uiTriangle.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -111,6 +120,15 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="uiObject.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="uiCircle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="uiRectangle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="uiTriangle.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

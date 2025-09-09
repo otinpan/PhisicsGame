@@ -70,6 +70,7 @@ public:
 	// setter
 	void setCenter(const glm::vec3& center) { mCenter = center; }
 	void setPosition(const glm::vec3& position) { mPosition = position; }
+	void setGravity(const glm::vec2& gravity) { mGravity = gravity; }
 	void setVertices(const std::vector<glm::vec3>& vertices) { mVertices = vertices; }
 	void setSVertices(const std::vector<glm::vec3>& vertices) { sVertices = vertices; }
 	void setVelocity(const glm::vec2& velocity) { mVelocity = velocity; }

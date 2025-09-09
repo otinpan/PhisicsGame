@@ -30,6 +30,9 @@ void Parent::gatherInput(InputState& state) {
 	state.key[GLFW_KEY_1] = glfwGetKey(mWindow, GLFW_KEY_1) == GLFW_PRESS;
 	state.key[GLFW_KEY_2] = glfwGetKey(mWindow, GLFW_KEY_2) == GLFW_PRESS;
 	state.key[GLFW_KEY_3] = glfwGetKey(mWindow, GLFW_KEY_3) == GLFW_PRESS;
+	state.key[GLFW_KEY_SPACE] = glfwGetKey(mWindow, GLFW_KEY_SPACE) == GLFW_PRESS;
+	state.key[GLFW_KEY_LEFT] = glfwGetKey(mWindow, GLFW_KEY_LEFT) == GLFW_PRESS;
+	state.key[GLFW_KEY_RIGHT] = glfwGetKey(mWindow, GLFW_KEY_RIGHT) == GLFW_PRESS;
 	
 	double x, y;
 	glfwGetCursorPos(mWindow, &x, &y);
@@ -50,6 +53,14 @@ void Parent::gatherInput(InputState& state) {
 
 	state.mouseX = static_cast<float>(x);
 	state.mouseY = static_cast<float>(y);
+
+
+	// ç∂ÉNÉäÉbÉN
+	bool curLeft = (glfwGetMouseButton(mWindow, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
+	state.mouseLeftPressed = (!state.prevMouseLeftDown && curLeft);  // óßÇøè„Ç™ÇË
+	state.mouseLeftReleased = (state.prevMouseLeftDown && !curLeft); // óßÇøâ∫Ç™ÇË
+	state.mouseLeftDown = curLeft;
+	state.prevMouseLeftDown = curLeft;
 }
 
 void Parent::update() {

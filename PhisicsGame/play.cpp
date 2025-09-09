@@ -13,6 +13,10 @@
 #include <iostream>
 #include <random>
 #include "ui.h"
+#include "uiObject.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 
 
 Play::Play()
@@ -27,6 +31,7 @@ Play::Play()
 	, mIsTriangleCooldown(false)
 	, mIsRectangleCooldown(false)
 	, mIsCircleCooldown(false)
+	, mIsObjectCooldown(false)
 	, mTriangleAccumulator(0.0f)
 	, mRectangleAccumulator(0.0f)
 	, mCircleAccumulator(0.0f)
@@ -65,6 +70,7 @@ void Play::update(Parent* parent) {
 		while (mAccumulator >= deltaTime && steps < kMaxSteps) {
 			processInput(parent,deltaTime);
 			updatePlay(deltaTime);
+			mUI->update(deltaTime);
 			mAccumulator -= deltaTime;
 			++steps;
 		}
@@ -84,70 +90,65 @@ void Play::processInput(Parent* parent,float deltaTime) {
 
 
 	// Objectの追加
-	// Triangle
-	if (mIsTriangleCooldown) {
-		mTriangleAccumulator += deltaTime;
-		if (mTriangleAccumulator >= 1.0f) {
-			mTriangleAccumulator = 0.0f;
-			mIsTriangleCooldown = false;
+	if (mIsObjectCooldown) {
+		mObjectAccumulator += deltaTime;
+		if (mObjectAccumulator >= 1.0f) {
+			mIsObjectCooldown = false;
+			mObjectAccumulator = 0.0f;
 		}
 	}
-	if (mInputState.key[GLFW_KEY_1]&&!mIsTriangleCooldown) {
-		float s = distScale(rng);
-		float a = glm::radians(distAngleDeg(rng));
-		addTriangle(
-			glm::vec3(mInputState.mouseX, mInputState.mouseY, 0.0f),
-			glm::vec3(1.0f, 0.0f, 0.0f),
-			100.0f,
-			0.1f,
-			glm::vec3(s, s, 1.0f),
-			a
-		);
-		mIsTriangleCooldown = true;
-		
+	float posx = std::min(mInputState.mouseX, mCup->getRight() - 0.1f);
+	posx = std::max(posx, mCup->getLeft() + 0.1f);
+	float posy = mCup->getTop() + 0.3f;
+
+	// mHaveObjectの更新
+	mHaveObject->setPosition(glm::vec3(posx, posy, 0.0f));
+	mHaveObject->setCenter(glm::vec3(posx, posy, 0.0f));
+
+	
+	if (mInputState.key[GLFW_KEY_LEFT]) {
+		mHaveObject->setAngle(mHaveObject->getAngle() + M_PI / 5.0f * deltaTime);
 	}
-	// Rectangle
-	if (mIsRectangleCooldown) {
-		mRectangleAccumulator += deltaTime;
-		if (mRectangleAccumulator >= 1.0f) {
-			mIsRectangleCooldown = false;
-			mRectangleAccumulator = 0.0f;
-		}
+	if (mInputState.key[GLFW_KEY_RIGHT]) {
+		mHaveObject->setAngle(mHaveObject->getAngle() - M_PI / 5.0f * deltaTime);
 	}
-	if (mInputState.key[GLFW_KEY_2]&&!mIsRectangleCooldown) {
-		float s = distScale(rng);
-		float a = glm::radians(distAngleDeg(rng));
-		addRectangle(
-			glm::vec3(mInputState.mouseX, mInputState.mouseY, 0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f),
-			100.0f,
-			0.1f,
-			glm::vec3(s, s, 1.0f),
-			a
-		);
-		mIsRectangleCooldown = true;
+
+	if (mInputState.mouseLeftPressed && !mIsObjectCooldown) {
+		// ボタンを押したら発射
+		mHaveObject->setGravity(glm::vec2(0.0f, -0.1f));
+
+		// uiの一番上のオブジェクトを追加
+		objectData data = mUI->takeUIObject();
+		if (data.shapetype == 1)
+			addTriangle(
+				glm::vec3(posx,posy, 0.0f),
+				data.color,
+				100.0f,
+				0.1f,
+				data.scale,
+				0.0f
+			);
+		else if (data.shapetype == 2)
+			addRectangle(
+				glm::vec3(posx, posy, 0.0f),
+				data.color,
+				100.0f,
+				0.1f,
+				data.scale,
+				0.0f
+			);
+		else if (data.shapetype ==0)
+			addCircle(
+				glm::vec3(posx, posy, 0.0f),
+				data.color,
+				100.0f,
+				0.1f,
+				data.scale
+			);
+		mIsObjectCooldown = true;
+
 	}
-	// Circle
-	if (mIsCircleCooldown) {
-		mCircleAccumulator += deltaTime;
-		if (mCircleAccumulator >= 1.0f) {
-			mIsCircleCooldown = false;
-			mCircleAccumulator = 0.0f;
-		}
-	}
-	if (mInputState.key[GLFW_KEY_3]&&!mIsCircleCooldown) {
-		float s = distScale(rng);
-		float a = glm::radians(distAngleDeg(rng));
-		addCircle(
-			glm::vec3(mInputState.mouseX, mInputState.mouseY, 0.0f),
-			glm::vec3(0.0f, 0.0f, 1.0f),
-			100.0f,
-			0.1f,
-			glm::vec3(s, s, 1.0f)
-		);
-		mIsCircleCooldown = true;
-		
-	}
+
 }
 
 void Play::updatePlay(float deltaTime) {
@@ -168,6 +169,7 @@ void Play::updatePlay(float deltaTime) {
 	for (int k = 0; k < 5; k++) {
 		for (int i = 0; i < mObjects.size(); i++) {
 			for (int j = i + 1; j < mObjects.size(); j++) {
+				if (mObjects[i] == mHaveObject || mObjects[j] == mHaveObject)continue;
 				isIntersects(mObjects[i], mObjects[j]);
 			}
 		}
@@ -217,6 +219,10 @@ void Play::draw() {
 		if (obj) obj->draw(*mShader);
 	}
 	mCup->draw(*mShader);
+
+
+	
+	mUI->drawUIObject(*mShader);
 }
 
 
@@ -254,27 +260,46 @@ void Play::loadData() {
 	sRectangleMesh = createInitRectangle();
 	sCircleMesh = createInitCircle(64, 0.5f);
 
-	/*addTriangle(
-		glm::vec3(-0.5f, 0.5f, 0.0f),
-		glm::vec3(1.0f,0.0f,0.0f),
-		glm::vec3(0.5f,0.5f,1.0f),
-		glm::radians(30.0f)
-	);
+	// UI 
+	mUI = new UI();
+	mUI->initialize(this);
 
-	addRectangle(
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		glm::vec3(0.5f, 0.3f, 1.0f),
-		glm::radians(45.0f)
-	);
+	// Triangle
+	float s = distScale(rng);
+	int type = distShapeType(rng);
+	float posy = mCup->getTop() + 0.3f;
+	if(type==0){
+		addTriangle(
+			glm::vec3(0.0f,posy , 0.0f),
+			glm::vec3(1.0f, 0.0f, 0.0f),
+			100.0f,
+			0.1f,
+			glm::vec3(s, s, 1.0f),
+			0.0f
+		);
 
-	addCircle(
-		glm::vec3(0.3f, -0.5f, 0.0f),
-		glm::vec3(0.0f, 0.0f, 1.0f),
-		glm::vec3(0.3f, 0.3f, 1.0f)
-	);*/
+	}
+	// Rectangle
+    else if(type==1){
+		addRectangle(
+			glm::vec3(0.0f,posy, 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f),
+			100.0f,
+			0.1f,
+			glm::vec3(s, s, 1.0f),
+			0.0f
+		);
+	}
+	else if(type==2){
+		addCircle(
+			glm::vec3(0.0f, posy, 0.0f),
+			glm::vec3(0.0f, 0.0f, 1.0f),
+			100.0f,
+			0.1f,
+			glm::vec3(s, s, 1.0f)
+		);
 
-	printf("%d", mObjects.size());
+	}
 }
 
 void Play::unloadData() {
@@ -282,6 +307,10 @@ void Play::unloadData() {
 		obj->setState(Object::DEAD);
 	}
 	mCup = nullptr;
+	delete mCup;
+
+	mUI = nullptr;
+	delete mUI;
 }
 
 void Play::shutdown() {
@@ -327,6 +356,10 @@ void Play::addCircle(glm::vec3 center, glm::vec3 color, float mass, float restit
 	cir->initialize(this);
 }
 
+
+void Play::setHaveObject(Object* obj) {
+	mHaveObject = obj;
+}
 void Play::moveTo(Parent* parent, Parent::SeqID id) {
 	
 }

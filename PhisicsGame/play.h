@@ -20,6 +20,8 @@ public:
 	void addObject(class Object* obj);
 	void removeObject(class Object* obj);
 
+	void setHaveObject(class Object* obj);
+
 	// hitstop
 	void setIsHitstop(bool isHitstop) { mIsHitstop = isHitstop; }
 	bool getIsHitstop() { return mIsHitstop; }
@@ -29,6 +31,7 @@ public:
 	// getter
 	const std::vector<class Object*>& getObjects() { return mObjects; }
 	class Cup* getCup() { return mCup; }
+	class UI* getUI() { return mUI; }
 	GLMesh& getTriangleMesh() { return sTriangleMesh; }
 	GLMesh& getRectangleMesh() { return sRectangleMesh; }
 	GLMesh& getCircleMesh() { return sCircleMesh; }
@@ -47,6 +50,7 @@ private:
 	class UI* mUI;
 	std::vector<class Object*> mObjects;
 	std::vector<class Object*> mPendingObjects;
+	class Object* mHaveObject; // playerが持っているオブジェクト
 
 	bool mIsRunning;
 	bool mUpdatingObjects;
@@ -80,12 +84,17 @@ private:
 	float mRectangleAccumulator;
 	float mCircleAccumulator;
 
+	bool mIsObjectCooldown;
+	float mObjectAccumulator;
+
+
+
 	// Shader
 	class Shader* mShader;
 
 	// random
 	std::mt19937 rng{ std::random_device{}() };
-	std::uniform_real_distribution<float> distScale{ 0.1f, 0.3f };
-	std::uniform_real_distribution<float> distAngleDeg{ 0.0f, 360.0f };
+	std::uniform_real_distribution<float> distScale{ 0.1f, 0.25f };
+	std::uniform_int_distribution<int> distShapeType{ 0,2 };
 
 };
