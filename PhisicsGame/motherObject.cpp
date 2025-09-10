@@ -51,6 +51,9 @@ void MotherObject::addChild(Object* obj) {
 	mMotherObject->setAngularSpeed(0.0f);
 	obj->setAngularSpeed(0.0f);
 
+	// 色の変更
+	mMotherObject->setColor(glm::vec3(0.0f, 0.0f, 0.0f));
+
 	obj->setMotherObject(this);
 	obj->setIsCombined(true);
 
@@ -59,6 +62,7 @@ void MotherObject::addChild(Object* obj) {
 		child->setCenter(center);
 		child->setInertia(inertia);
 		child->setMass(mass);
+		child->setColor(glm::vec3(0.0f, 0.0f, 0.0f));
 		child->setVelocity(glm::vec2(0.0f, 0.0f));
 		child->setAngularSpeed(0.0f);
 	}
@@ -107,11 +111,15 @@ void MotherObject::addMother(MotherObject* mother) {
 		mChildren.emplace_back(child);
 	}
 
+	// 色の変更
+	mMotherObject->setColor(glm::vec3(0.0f, 0.0f, 0.0f));
+
 	// 全てのchildに採用
 	for (auto& child : mChildren) {
 		child->setCenter(center);
 		child->setInertia(inertia);
 		child->setMass(mass);
+		child->setColor(glm::vec3(0.0f, 0.0f, 0.0f));
 		child->setVelocity(glm::vec2(0.0f, 0.0f));
 		child->setAngularSpeed(0.0f);
 		child->setMotherObject(this);

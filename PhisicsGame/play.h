@@ -37,6 +37,7 @@ public:
 	GLMesh& getTriangleMesh() { return sTriangleMesh; }
 	GLMesh& getRectangleMesh() { return sRectangleMesh; }
 	GLMesh& getCircleMesh() { return sCircleMesh; }
+	bool getIsEnd() { return mIsEnd; }
 
 	// sequence
 	void moveTo(Parent* parent, Parent::SeqID id);

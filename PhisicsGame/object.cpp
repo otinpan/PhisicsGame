@@ -115,7 +115,9 @@ void Object::update(float deltaTime) {
 
 	// ƒQ[ƒ€I—¹
     if (((float)getPosition().y > (float)getPlay()->getCup()->getTop() + 0.1f)   && mVelocity.y > 0.0f) {
-		mPlay->endGame();
+		if (!getPlay()->getIsEnd()) {
+			mPlay->endGame();
+		}
 	}
 }
 
